@@ -1,4 +1,3 @@
-from os import rmdir
 from os.path import abspath
 from subprocess import Popen, PIPE
 from shutil import which, make_archive
@@ -16,10 +15,6 @@ def download_workshop(game_id: int, content_id: int) -> bool:
             stdout=PIPE)
 
         out, _ = proc.communicate()  # timeout?
-
-        print("\n[DEBUG] ###########################")
-        print(out.decode()) #.replace(b'\\r\\n', b'\n'))
-        print("[DEBUG] ###########################\n")
 
         return out.split(b'\r\n')[8].startswith(b"Success")
     except IndexError:
