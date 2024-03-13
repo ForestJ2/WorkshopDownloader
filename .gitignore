@@ -1,0 +1,5 @@
+downloads/*/
+archives/*.zip
+__pycache__
+*.ipynb
+*.pyc

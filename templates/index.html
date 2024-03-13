@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop Downloader</title>
+    <style>
+        html, body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #loading-img {
+            display: block;
+            width: auto;
+            height: 4em;
+            margin: 1em auto;
+            animation: loadingSpin 2s linear infinite;
+        }
+
+        @keyframes loadingSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .frame {
+            width: 80%;
+            height: 30%;
+            border-radius: 0.25em;
+            margin: 0 auto;
+            padding: 1em 0.5em;
+        }
+
+        #form-frame {
+            margin-top: 5em;
+            background-color: #b3b3b3;
+        }
+
+        #result-frame {
+            display: auto;
+            margin-top: 2em;
+            text-align: center;
+            background-color: #ffdddd;
+        }
+
+        .frame span.form-header {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        .frame input[type=text] {
+            display: block;
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        .frame input[type=submit] {
+            display: block;
+            width: 50%;
+            height: 2em;
+            margin:1em auto 0 auto;
+        }
+    </style>
+    <script>
+        const BASE_URL = location.protocol + "//" + location.host;
+
+        function get_id_from_url() {
+            var input_value = document.getElementById("url-input").value;
+            var params = new URLSearchParams(input_value);
+            var id = params.get("https://steamcommunity.com/sharedfiles/filedetails/?id");
+
+            if (id !== null && !isNaN(id)) {
+                return id;
+            } else if (!isNaN(input_value)) {
+                return input_value;
+            }
+
+            return -1;
+        }
+
+        function get_content_info() {
+            fetch(BASE_URL + "/info/" + "").then(response => {
+
+            }).then(data => {
+
+            }).catch(error => {
+
+            });
+        }
+
+        function submit_download_request() {
+            fetch(BASE_URL + "/request/" + "").then(response => {
+
+            }).then(data => {
+
+            }).catch(error => {
+
+            });
+        }
+
+        async function submit_form() {
+            // BEHOLD! the monolith
+            var loading_image = document.getElementById("loading-img");
+            var result_frame = document.getElementById("result-frame");
+            var game_name = document.getElementById("result-game-name");
+            var content_name = document.getElementById("result-content-name");
+            var content_id = get_id_from_url();
+            var game_id = 0;
+
+            loading_image.setAttribute("style", "display:none;");
+            result_frame.setAttribute("style", "display:none;");
+            document.getElementById("result-game-name").innerText = "";
+            document.getElementById("result-content-name").innerText = "";
+            document.getElementById("result-link").href = "#";
+            document.getElementById("result-link").innerText = "";
+            document.getElementById("result-status").innerText = "";
+
+            if (content_id < 1) {
+                document.getElementById("result-status").innerText = "Invalid URL / ID";
+                document.getElementById("url-input").style.border = "1px solid red";
+                result_frame.setAttribute("style", "");
+                return;
+            }
+            
+            loading_image.setAttribute("style", "");
+            await fetch("/info/" + content_id)
+            .then(response => response.json())
+            .then(json => {
+                game_id = json["game"]["id"];
+                console.log(json);
+
+                document.getElementById("result-status").innerText = "Download Pending...";
+                document.getElementById("result-game-name").innerText = json["game"]["name"] + " - ";
+                document.getElementById("result-content-name").innerText = json["content"]["name"];
+                result_frame.setAttribute("style", "");
+            });
+
+            await fetch("/request/" + game_id + "/" + content_id)
+            .then(response => response.json())
+            .then(json => {
+                if (json["error"] == true) {
+                    document.getElementById("result-status").innerText = "Error downloading from steam workshop.";
+                    return;
+                }
+                
+                document.getElementById("result-link").href = json["url"];
+                document.getElementById("result-link").innerText = content_id + ".zip";
+                document.getElementById("result-status").innerText = "Success!";
+            });
+
+            loading_image.setAttribute("style", "display:none;");
+        }
+    </script>
+</head>
+<body>
+    <div id="form-frame" class="frame">
+        <form onsubmit="return false">
+            <span class="form-header">Workshop content link or ID</span>
+            <input id="url-input" type="text" placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=606778917 OR 606778917"/>
+            <input type="submit" value="Download" onclick="submit_form()"/>
+        </form>
+    </div>
+    <img id="loading-img" style="display:none;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgdmlld0JveD0iMCAwIDQ4IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0aXRsZS8+PGcgZGF0YS1uYW1lPSIzNS1HZWFyIiBpZD0iXzM1LUdlYXIiPjxwYXRoIGQ9Ik00NiwxOUg0Mi4zMmExOC44NiwxOC44NiwwLDAsMC0xLjgzLTQuNDJMNDMuMDksMTJhMiwyLDAsMCwwLDAtMi44M0wzOC44NSw0LjkxYTIsMiwwLDAsMC0yLjgzLDBMMzMuNDEsNy41MUExOC44OCwxOC44OCwwLDAsMCwyOSw1LjY4VjJhMiwyLDAsMCwwLTItMkgyMWEyLDIsMCwwLDAtMiwyVjUuNjhhMTguODgsMTguODgsMCwwLDAtNC40MSwxLjgzTDEyLDQuOTFhMiwyLDAsMCwwLTIuODMsMEw0LjkxLDkuMTVhMiwyLDAsMCwwLDAsMi44M2wyLjYxLDIuNjFBMTguODYsMTguODYsMCwwLDAsNS42OCwxOUgyYTIsMiwwLDAsMC0yLDJ2NmEyLDIsMCwwLDAsMiwySDUuNjhhMTguODYsMTguODYsMCwwLDAsMS44Myw0LjQyTDQuOTEsMzZhMiwyLDAsMCwwLDAsMi44M2w0LjI0LDQuMjRhMiwyLDAsMCwwLDIuODMsMGwyLjYxLTIuNjFBMTguODgsMTguODgsMCwwLDAsMTksNDIuMzJWNDZhMiwyLDAsMCwwLDIsMmg2YTIsMiwwLDAsMCwyLTJWNDIuMzJhMTguODgsMTguODgsMCwwLDAsNC40MS0xLjgzTDM2LDQzLjA5YTIsMiwwLDAsMCwyLjgzLDBsNC4yNC00LjI0YTIsMiwwLDAsMCwwLTIuODNsLTIuNjEtMi42MUExOC44NiwxOC44NiwwLDAsMCw0Mi4zMiwyOUg0NmEyLDIsMCwwLDAsMi0yVjIxQTIsMiwwLDAsMCw0NiwxOVptMCw4SDQxLjU0YTEsMSwwLDAsMC0xLC43OEExNi44NSwxNi44NSwwLDAsMSwzOC4zOCwzM2ExLDEsMCwwLDAsLjE0LDEuMjRsMy4xNiwzLjE2LTQuMjQsNC4yNC0zLjE2LTMuMTZBMSwxLDAsMCwwLDMzLDM4LjM4YTE2LjgyLDE2LjgyLDAsMCwxLTUuMjYsMi4xOCwxLDEsMCwwLDAtLjc4LDFWNDZIMjFWNDEuNTRhMSwxLDAsMCwwLS43OC0xQTE2LjgyLDE2LjgyLDAsMCwxLDE1LDM4LjM4YTEsMSwwLDAsMC0xLjI0LjE0bC0zLjE2LDMuMTZMNi4zMiwzNy40M2wzLjE2LTMuMTZBMSwxLDAsMCwwLDkuNjIsMzNhMTYuODUsMTYuODUsMCwwLDEtMi4xOC01LjI2LDEsMSwwLDAsMC0xLS43OEgyVjIxSDYuNDZhMSwxLDAsMCwwLDEtLjc4QTE2Ljg1LDE2Ljg1LDAsMCwxLDkuNjIsMTVhMSwxLDAsMCwwLS4xNC0xLjI0TDYuMzIsMTAuNTZsNC4yNC00LjI0LDMuMTYsMy4xNkExLDEsMCwwLDAsMTUsOS42MmExNi44MiwxNi44MiwwLDAsMSw1LjI2LTIuMTgsMSwxLDAsMCwwLC43OC0xVjJoNlY2LjQ2YTEsMSwwLDAsMCwuNzgsMUExNi44MiwxNi44MiwwLDAsMSwzMyw5LjYyYTEsMSwwLDAsMCwxLjI0LS4xNGwzLjE2LTMuMTYsNC4yNCw0LjI0LTMuMTYsMy4xNkExLDEsMCwwLDAsMzguMzgsMTVhMTYuODUsMTYuODUsMCwwLDEsMi4xOCw1LjI2LDEsMSwwLDAsMCwxLC43OEg0NloiLz48cGF0aCBkPSJNMjQsMTVhOSw5LDAsMSwwLDksOUE5LDksMCwwLDAsMjQsMTVabTAsMTZhNyw3LDAsMSwxLDctN0E3LDcsMCwwLDEsMjQsMzFaIi8+PC9nPjwvc3ZnPg=="/>
+    <div id="result-frame" class="frame" style="display:none;">
+        <h3><span id="result-game-name"></span> <span id="result-content-name"></span></h3>
+        <p>Result: <span id="result-status" style="font-weight:bold;">Pending...</span></p>
+        <p>Archive Link: <span><a id="result-link" href="#" target="_blank">None</a></span></p>
+    </div>
+</body>
+</html>
