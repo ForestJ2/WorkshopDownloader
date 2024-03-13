@@ -16,6 +16,7 @@ def index_page():
 @app.route("/info/<int:content_id>")
 def workshop_info(content_id: int):
     """ Obtain content information from community workshop. """
+
     try:
         content = workshop.get_content(content_id)
 
@@ -41,21 +42,15 @@ def download_content(game_id: int, content_id: int):
     """ Have server download workshop content. """
 
     if exists(f"./archives/{content_id}.zip"):
-        return jsonify({
-            "error": False,
-            "url": f"/archive/{content_id}"
-        })
+        return jsonify({"error": False, "url": f"/archive/{content_id}"})
 
     try:
         if steamcmd.download_workshop(game_id, content_id) is False:
             return jsonify({"error": True, "url": ""})
         
         steamcmd.compress_content(game_id, content_id)
+        return jsonify({"error": False, "url": f"/archive/{content_id}"})
 
-        return jsonify({
-            "error": False,
-            "url": f"/archive/{content_id}"
-        })
     except Exception as e:
         print(f"[ERROR] exception when handling download request: {e}")
     
@@ -65,6 +60,7 @@ def download_content(game_id: int, content_id: int):
 @app.route("/archive/<int:content_id>")
 def user_download(content_id: int):
     """ Supply content archive to user. """
+
     if exists(f"./archives/{content_id}.zip") is False:
         abort(404)
 

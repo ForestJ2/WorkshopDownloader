@@ -4,12 +4,9 @@ from time import time, sleep
 from os import listdir, path, remove
 
 
-_AGE_LIMIT = 3600  # in seconds, files reaching this age are removed
+_AGE_LIMIT = 3600  # in seconds, files this age or older are removed
 _ARCHIVE_DIR = path.abspath("./archives/") + '/'
 _CONTENT_DIR = path.abspath("./downloads/steamapps/workshop/content/") + '/'
-
-#_ARCHIVE_DIR = "./archives/"
-#_CONTENT_DIR = "./downloads/steamapps/workshop/content/"
 
 
 def _remove(file_loc: str):
@@ -17,8 +14,10 @@ def _remove(file_loc: str):
         try:
             if path.isfile(file_loc):
                 remove(file_loc)
+
             if path.isdir(file_loc):
                 rmtree(file_loc)
+
         except Exception as e:
             print(f"[ERROR] (cleanup._remove) {e}")
 
@@ -37,8 +36,8 @@ def _cleanup_content():
     for dir in listdir(_CONTENT_DIR):
         if path.isdir(_CONTENT_DIR + dir) is False: continue
 
-        for file_loc in listdir(_CONTENT_DIR + dir):
-            _remove(_CONTENT_DIR + dir + "/" + file_loc)
+        for content_loc in listdir(_CONTENT_DIR + dir):
+            _remove(_CONTENT_DIR + dir + "/" + content_loc)
 
 
 def _background():
