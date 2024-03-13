@@ -135,7 +135,7 @@
                 game_id = json["game"]["id"];
                 console.log(json);
 
-                document.getElementById("result-status").innerText = "Download Pending...";
+                document.getElementById("result-status").innerText = "Downloading from Workshop. This may take awhile...";
                 document.getElementById("result-game-name").innerText = json["game"]["name"] + " - ";
                 document.getElementById("result-content-name").innerText = json["content"]["name"];
                 result_frame.setAttribute("style", "");
