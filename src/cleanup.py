@@ -5,8 +5,8 @@ from os import listdir, path, remove
 
 
 _AGE_LIMIT = 3600  # in seconds, files this age or older are removed
-_ARCHIVE_DIR = path.abspath("./archives/") + '/'
-_CONTENT_DIR = path.abspath("./downloads/steamapps/workshop/content/") + '/'
+_ARCHIVE_DIR = path.abspath("archives/") + '/'
+_CONTENT_DIR = path.abspath("downloads/steamapps/workshop/content/") + '/'
 
 
 def _remove(file_loc: str):
