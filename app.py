@@ -59,14 +59,16 @@ def download_content(game_id: int, content_id: int):
 
 @app.route("/archive/<int:content_id>")
 def user_download(content_id: int):
-    """ Supply content archive to user. """
+    """ Supply workshop content archive to user. """
 
     if exists(f"./archives/{content_id}.zip") is False:
         abort(404)
 
-    return send_from_directory(abspath("./archives/"),
-                               f"{content_id}.zip",
-                               as_attachment=True)
+    return send_from_directory(
+        abspath("archives/"),
+        f"{content_id}.zip",
+        as_attachment=True
+        )
 
 
 def main():
