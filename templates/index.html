@@ -68,8 +68,6 @@
         }
     </style>
     <script>
-        const BASE_URL = location.protocol + "//" + location.host;
-
         function get_id_from_url() {
             var input_value = document.getElementById("url-input").value;
             var params = new URLSearchParams(input_value);
@@ -84,63 +82,24 @@
             return -1;
         }
 
-        function get_content_info() {
-            fetch(BASE_URL + "/info/" + "").then(response => {
-
-            }).then(data => {
-
-            }).catch(error => {
-
-            });
-        }
-
-        function submit_download_request() {
-            fetch(BASE_URL + "/request/" + "").then(response => {
-
-            }).then(data => {
-
-            }).catch(error => {
-
-            });
-        }
-
-        async function submit_form() {
-            // BEHOLD! the monolith
-            var loading_image = document.getElementById("loading-img");
-            var result_frame = document.getElementById("result-frame");
-            var game_name = document.getElementById("result-game-name");
-            var content_name = document.getElementById("result-content-name");
-            var content_id = get_id_from_url();
+        async function get_content_info(content_id) {
             var game_id = 0;
 
-            loading_image.setAttribute("style", "display:none;");
-            result_frame.setAttribute("style", "display:none;");
-            document.getElementById("result-game-name").innerText = "";
-            document.getElementById("result-content-name").innerText = "";
-            document.getElementById("result-link").href = "#";
-            document.getElementById("result-link").innerText = "";
-            document.getElementById("result-status").innerText = "";
-
-            if (content_id < 1) {
-                document.getElementById("result-status").innerText = "Invalid URL / ID";
-                document.getElementById("url-input").style.border = "1px solid red";
-                result_frame.setAttribute("style", "");
-                return;
-            }
-            
-            loading_image.setAttribute("style", "");
             await fetch("/info/" + content_id)
             .then(response => response.json())
             .then(json => {
                 game_id = json["game"]["id"];
-                console.log(json);
 
                 document.getElementById("result-status").innerText = "Downloading from Workshop. This may take awhile...";
                 document.getElementById("result-game-name").innerText = json["game"]["name"] + " - ";
                 document.getElementById("result-content-name").innerText = json["content"]["name"];
-                result_frame.setAttribute("style", "");
+                document.getElementById("result-frame").setAttribute("style", "");
             });
 
+            return game_id;
+        }
+
+        async function download_request(game_id, content_id) {
             await fetch("/request/" + game_id + "/" + content_id)
             .then(response => response.json())
             .then(json => {
@@ -153,6 +112,35 @@
                 document.getElementById("result-link").innerText = content_id + ".zip";
                 document.getElementById("result-status").innerText = "Success!";
             });
+        }
+
+        async function submit_form() {
+            var loading_image = document.getElementById("loading-img");
+            var content_id = get_id_from_url();
+            var game_id = 0;
+
+            loading_image.setAttribute("style", "display:none;");
+            document.getElementById("result-frame").setAttribute("style", "display:none;");
+            document.getElementById("result-game-name").innerText = "";
+            document.getElementById("result-content-name").innerText = "";
+            document.getElementById("result-link").href = "#";
+            document.getElementById("result-link").innerText = "";
+            document.getElementById("result-status").innerText = "";
+
+            if (content_id < 1) {
+                document.getElementById("result-status").innerText = "Invalid URL / ID";
+                document.getElementById("url-input").style.border = "1px solid red";
+                document.getElementById("result-frame").setAttribute("style", "");
+                return;
+            }
+            
+            loading_image.setAttribute("style", "");
+            
+            game_id = await get_content_info(content_id);
+
+            if (game_id != 0) {
+                await download_request(game_id, content_id);
+            }
 
             loading_image.setAttribute("style", "display:none;");
         }
