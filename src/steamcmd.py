@@ -16,6 +16,7 @@ def download_workshop(game_id: int, content_id: int) -> bool:
 
         out, _ = proc.communicate()  # timeout?
 
+        # steamcmd returns 0 as exit code no matter result, have to parse output
         return out.split(b'\r\n')[8].startswith(b"Success")
     except IndexError:
         raise Exception("unexpected or invalid steamcmd output")
