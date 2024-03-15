@@ -1,4 +1,4 @@
-from requests import get as http_get
+from requests import RequestException, get as http_get
 from re import IGNORECASE, compile as re_compile
 
 
@@ -59,6 +59,8 @@ def get_content(content_id: int) -> WorkshopContent:
         raise Exception("could not parse response from steam")
     except ValueError as e:
         # shouldn't ever happen, but just in case
+        raise e
+    except RequestException as e:
         raise e
 
     return content
