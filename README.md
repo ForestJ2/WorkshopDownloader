@@ -21,7 +21,7 @@ For SteamCMD, download the executable by following instructions from [Valve](htt
 
 You can use the `flask` command or run the server as a normal python script.
 
-`flask app.py` or `python app.py`
+`flask run` or `python app.py`
 
 For development or information, API documentation is located [here](API.md).
 
