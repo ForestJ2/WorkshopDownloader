@@ -19,24 +19,6 @@ class WorkshopContent(object):
         self.content_name = content_name
 
 
-def get_id(url: str) -> int:
-    """
-    Parse given URL or ID into integer of steam content ID.
-
-    Returns: 0 on validation error, > 0 INT on success
-    """
-
-    try:
-        return int(url)
-    except:
-        pass
-
-    if match := _RE_VALID_URL.match(url):
-        return int(match.group(1))
-
-    return 0
-
-
 def get_content(content_id: int) -> WorkshopContent:
     """
     Makes request to steamcommunity workshop content page and parses HTML for information.
