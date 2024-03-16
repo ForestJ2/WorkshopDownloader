@@ -8,7 +8,6 @@ _USER_AGENT = "SteamCMD Workshop Content Downloader"
 _RE_GAME_ID = re_compile(r'https://steamcommunity\.com/app/([0-9]{3,10})', flags=IGNORECASE)
 _RE_GAME_NAME = re_compile(r'<div class=\"apphub_AppName ellipsis\">([\S ]+)</div>', flags=IGNORECASE)
 _RE_CONTENT_NAME = re_compile(r'<title>Steam Workshop::([\S ]+)</title>', flags=IGNORECASE)
-_RE_VALID_URL = re_compile(r"^(?:https://){0,1}steamcommunity\.com/sharedfiles/filedetails/\?id=([0-9]+)(?:&searchtext=.*){0,1}$", flags=IGNORECASE)
 
 
 class WorkshopContent(object):
@@ -22,7 +21,7 @@ class WorkshopContent(object):
 def get_content(content_id: int) -> WorkshopContent:
     """
     Makes request to steamcommunity workshop content page and parses HTML for information.
-
+    `content_id` is not sanitized in this function and should be verified by caller.
     Errors are expected to be handled by the caller.
     """
 
